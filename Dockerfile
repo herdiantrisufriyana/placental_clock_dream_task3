@@ -33,9 +33,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Miniconda to /opt/conda, a directory accessible by the rstudio user
-RUN curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh && \
-    bash Miniconda3-latest-Linux-aarch64.sh -b -p /opt/conda && \
-    rm Miniconda3-latest-Linux-aarch64.sh
+RUN curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
+    rm Miniconda3-latest-Linux-x86_64.sh
 
 # Add Conda to the PATH and initialize Conda globally for all users
 ENV PATH="/opt/conda/bin:$PATH"
@@ -57,6 +57,19 @@ RUN R -e "BiocManager::install('tidyverse', ask=FALSE, update=FALSE, force=TRUE)
 RUN R -e "BiocManager::install('kableExtra', ask=FALSE, update=FALSE, force=TRUE)"
 RUN R -e "BiocManager::install('ggpubr', ask=FALSE, update=FALSE, force=TRUE)"
 RUN R -e "BiocManager::install('dslabs', ask=FALSE, update=FALSE, force=TRUE)"
+
+# Install project-specific R packages/Python libraries (in chronological order)
+RUN R -e "BiocManager::install('reticulate', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('pbapply', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('methylumi', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('IlluminaHumanMethylation450kanno.ilmn12.hg19', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('IlluminaHumanMethylationEPICanno.ilm10b4.hg19', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('IlluminaHumanMethylation450kmanifest', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('IlluminaHumanMethylationEPICmanifest', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('DMRcate', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('ChAMP', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('vroom', ask=FALSE, update=FALSE, force=TRUE)"
+RUN R -e "BiocManager::install('torch', ask=FALSE, update=FALSE, force=TRUE)"
 
 # Set the working directory to ~/project on R session start
 RUN echo 'setwd("~/project")' >> /home/rstudio/.Rprofile
