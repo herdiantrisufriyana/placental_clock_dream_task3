@@ -21,8 +21,16 @@ docker build -t placental_clock_dream_task3 --load .
 
 Run the container every time you start working on the project.
 
+In terminal:
+
 ```{bash}
 docker run -d -p 8787:8787 -p 8888:8888 -v "$(pwd)":/home/rstudio/project --name placental_clock_dream_task3_container placental_clock_dream_task3
+```
+
+In command prompt:
+
+```{bash}
+docker run -d -p 8787:8787 -p 8888:8888 -v "%cd%":/home/rstudio/project --name placental_clock_dream_task3_container placental_clock_dream_task3
 ```
 
 ## Instructions for use
