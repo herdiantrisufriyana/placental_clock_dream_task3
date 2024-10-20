@@ -1,4 +1,4 @@
-# Project template
+# Placental Clock DREAM Challenge 2024 (Task 3)
 
 ## System requirements
 
@@ -11,18 +11,18 @@ Modify Dockerfile according to AMD64 or ARM64.
 https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh
 
-Change `project_template` and `$(pwd)` to the project image name and the absolute path of the project folder.
+Change `$(pwd)` to the absolute path of the project folder.
 
 Build the project image once for a new machine.
 
 ```{bash}
-docker build -t project_template --load .
+docker build -t placental_clock_dream_task3 --load .
 ```
 
 Run the container every time you start working on the project.
 
 ```{bash}
-docker run -d -p 8787:8787 -p 8888:8888 -v "$(pwd)":/home/rstudio/project --name project_template_container project_template
+docker run -d -p 8787:8787 -p 8888:8888 -v "$(pwd)":/home/rstudio/project --name placental_clock_dream_task3_container placental_clock_dream_task3
 ```
 
 ## Instructions for use
