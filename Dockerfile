@@ -32,10 +32,17 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Miniconda to /opt/conda, a directory accessible by the rstudio user
-RUN curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
-    rm Miniconda3-latest-Linux-x86_64.sh
+# Detect architecture and download the appropriate Miniconda installer
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    bash Miniconda3-latest-Linux-*.sh -b -p /opt/conda && \
+    rm Miniconda3-latest-Linux-*.sh
 
 # Add Conda to the PATH and initialize Conda globally for all users
 ENV PATH="/opt/conda/bin:$PATH"
@@ -43,13 +50,10 @@ RUN /opt/conda/bin/conda init bash && \
     echo ". /opt/conda/etc/profile.d/conda.sh" > /etc/profile.d/conda.sh
 
 # Install Python and its libraries
-RUN conda create -n conda_env python=3.12.4 -y
-RUN conda install -n conda_env jupyterlab=4.0.11 -y
-RUN conda install -n conda_env pandas=2.2.2 -y
-RUN conda install -n conda_env scikit-learn=1.5.1 -y
-
-# Activate the conda environment globally
-RUN echo "conda activate conda_env" >> /etc/profile.d/conda.sh
+RUN /opt/conda/bin/conda install -y python=3.12.4
+RUN /opt/conda/bin/conda install -y jupyterlab=4.0.11
+RUN /opt/conda/bin/conda install -y pandas=2.2.2
+RUN /opt/conda/bin/conda install -y scikit-learn=1.5.1
 
 # Install R packages
 RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')"
