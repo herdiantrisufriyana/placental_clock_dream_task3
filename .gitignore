@@ -53,13 +53,3 @@ rsconnect/
 
 # Ignore everything in archive
 archive/*
-
-# Ignore everything in renv
-renv/*
-
-# But don't ignore these files in renv
-!renv/activate.R
-!renv/settings.json
-
-# Ignore everything in virtual env
-conda_env/*
