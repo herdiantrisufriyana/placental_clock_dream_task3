@@ -74,6 +74,7 @@ RUN R -e "BiocManager::install('DMRcate', ask=FALSE, update=FALSE, force=TRUE)"
 RUN R -e "BiocManager::install('ChAMP', ask=FALSE, update=FALSE, force=TRUE)"
 RUN R -e "BiocManager::install('vroom', ask=FALSE, update=FALSE, force=TRUE)"
 RUN R -e "BiocManager::install('torch', ask=FALSE, update=FALSE, force=TRUE)"
+RUN /opt/conda/bin/pip install synapseclient==4.4.1
 
 # Set the working directory to ~/project on R session start
 RUN echo 'setwd("~/project")' >> /home/rstudio/.Rprofile
