@@ -43,7 +43,7 @@ Your working directory is ~/project.
 Use terminal/command prompt to run the container terminal.
 
 ```{bash}
-docker exec -it project_template_container bash
+docker exec -it placental_clock_dream_task3_container bash
 ```
 
 In the container terminal, run jupyter lab using this line of codes.
