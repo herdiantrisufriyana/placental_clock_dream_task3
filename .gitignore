@@ -58,6 +58,9 @@ archive/*
 __pycache__/*
 .ipynb_checkpoints/*
 
+# Ignore the downloaded functions
+R/Preprocess.R
+
 # Ignore data
 data/*
 inst/extdata/*
