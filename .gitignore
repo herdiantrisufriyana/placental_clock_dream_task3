@@ -53,3 +53,42 @@ rsconnect/
 
 # Ignore everything in archive
 archive/*
+
+# Ignore local files
+__pycache__/*
+.ipynb_checkpoints/*
+
+# Ignore data
+data/*
+inst/extdata/*
+
+# But don't ignore some data
+!inst/extdata/syn59834055.csv
+!data/ano_ori.rds
+!data/df_train_colnames.rds
+!inst/extdata/ano_ori_chars_new_colnames_1742.csv
+!inst/extdata/ano_ori_chars_new_cats_1742.csv
+!inst/extdata/ano_ori_chars_new_conditions_1742.csv
+!data/ano_ori_chars.rds
+!data/preterm_imp_set_rownames.rds
+!inst/extdata/preterm_imp_predictions.csv
+!data/gdm_imp_set_rownames.rds
+!inst/extdata/gdm_imp_predictions.csv
+!data/lga_imp_set_rownames.rds
+!inst/extdata/lga_imp_predictions.csv
+!data/chorioamnionitis_imp_set_rownames.rds
+!inst/extdata/chorioamnionitis_imp_predictions.csv
+!data/ano_ori_ga_conds.rds
+!data/var_ga.rds
+!data/ga_est_set_rownames.rds
+!inst/extdata/ga_est_predictions.csv
+!data/ano_ori_ga_non_conds.rds
+!data/var_ga_non_conds.rds
+!data/preterm_pred_set_rownames.rds
+!inst/extdata/preterm_pred_prob.csv
+!data/gdm_pred_set_rownames.rds
+!inst/extdata/gdm_pred_prob.csv
+!data/lga_pred_set_rownames.rds
+!inst/extdata/lga_pred_prob.csv
+!data/chorioamnionitis_pred_set_rownames.rds
+!inst/extdata/chorioamnionitis_pred_prob.csv
