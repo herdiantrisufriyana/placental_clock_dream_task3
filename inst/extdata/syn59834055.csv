@@ -1,0 +1,9 @@
+name,size,size_unit,modified_date,id
+Beta_raw_subchallenge1.csv.gz,5.869,GB,05/24/2024 5:19 AM,syn59868755
+Beta_raw_subchallenge2.csv.gz,11.008,GB,05/24/2024 2:19 PM,syn59898399
+DetectionP_subchallenge1.csv,2.734,GB,05/24/2024 5:35 AM,syn59870646
+DetectionP_subchallenge2.csv,4.987,GB,05/24/2024 5:51 AM,syn59872208
+Preprocess.R,2.6,KB,06/02/2024 10:43 PM,syn60236613
+Probe_annotation.csv,568.7,MB,05/30/2024 8:49 AM,syn60157694
+Probe_array.csv,73.0,MB,05/30/2024 9:04 AM,syn60157718
+Sample_annotation.csv,89.5,KB,05/30/2024 8:37 AM,syn60157686

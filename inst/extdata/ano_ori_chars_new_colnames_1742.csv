@@ -1,0 +1,200 @@
+Dataset_ID,old_colname,new_colname
+GSE100197,subject id,subject_id
+GSE100197,pathology group,condition
+GSE100197,fetal sex,fetal_sex
+GSE100197,gestational age,GA
+GSE100197,sample tissue,tissue
+GSE100197,450k plate,plate
+GSE100197,450k sentrix_id,sentrix_id
+GSE100197,450k sentrix_position,sentrix_position
+GSE108567,fetal sex,fetal_sex
+GSE108567,tissue,tissue
+GSE108567,"gestational age (week, rounded)",GA
+GSE108567,processing group,batch
+GSE108567,sentrix_id,sentrix_id
+GSE108567,sentrix_position,sentrix_position
+GSE128827,cohort label,batch
+GSE128827,ethnicity,race_ethnicity
+GSE128827,aims coordinate1,aims_coordinate_1
+GSE128827,aims coordinate 2,aims_coordinate_2
+GSE128827,aims coordinate 3,aims_coordinate_3
+GSE128827,diagnosis,condition
+GSE128827,preeclamptic,condition_preeclamptic
+GSE128827,gestational age,GA
+GSE128827,fetal sex,fetal_sex
+GSE128827,plate,plate
+GSE128827,sentrix position,sentrix_position
+GSE128827,sentrix id,sentrix_id
+GSE128827,site a/b,site
+GSE69502,ntd status,condition
+GSE69502,fetal sex,fetal_sex
+GSE69502,sample tissue,tissue
+GSE69502,fetal gestational age (weeks),GA
+GSE71678,infant gender,fetal_sex
+GSE71678,maternal age,maternal_age
+GSE71678,birth weight (grams),birth_weight
+GSE71678,gestational age,GA
+GSE71678,placental as levels,placenta_as
+GSE71678,post-partum maternal toenail as,postpartum_maternal_toenail_as
+GSE71678,urinary as,urinary_as
+GSE71678,placenta_al,placenta_al
+GSE71678,placenta_cr,placenta_cr
+GSE71678,placenta_ni,placenta_ni
+GSE71678,placenta_se,placenta_se
+GSE71678,placenta_co,placenta_co
+GSE71678,placenta_pb,placenta_pb
+GSE71678,gestational_diabetes,condition_gestational_diabetes
+GSE71678,ever_smoker,smoker_ever
+GSE71678,bmi,bmi
+GSE71678,parity,parity
+GSE71678,maternal race,race_ethnicity
+GSE71678,mom_education,education
+GSE71678,reffreeewasomega1,reffreeewasomega1
+GSE71678,reffreeewasomega2,reffreeewasomega2
+GSE71678,reffreeewasomega3,reffreeewasomega3
+GSE71678,reffreeewasomega4,reffreeewasomega4
+GSE71678,reffreeewasomega5,reffreeewasomega5
+GSE74738,status/group,condition
+GSE74738,fetal sex/sex,fetal_sex_chr
+GSE74738,sample tissue,tissue
+GSE74738,fetal gestational age (weeks)/trimester,GA
+GSE74738,age (years),maternal_age
+GSE74738,450k plate id,plate
+GSE74738,450k sentrix_id,sentrix_id
+GSE74738,450k sentrix_position,sentrix_position
+GSE75196,Sex,fetal_sex
+GSE75196,disease,condition
+GSE75196,gestation (wk),GA
+GSE75196,tissue,tissue
+GSE75248,gestational age,GA
+GSE75248,batch,batch
+GSE75248,job1 nightshift,nightshift
+GSE75248,birth weight group,condition
+GSE75248,prepreg smoke,smoke_prepreg
+GSE75248,attention,attention
+GSE75248,adversity_v1,adversity
+GSE75248,quality of movement,movement
+GSE75248,maternal age yrs,maternal_edge
+GSE75248,arousal,arousal
+GSE75248,lethargy,lethargy
+GSE75248,infant gender,fetal_sex
+GSE75248,ivf,condition_ivf
+GSE75248,diabetes_gestational_pregnancy,condition_gestational_diabetes
+GSE75248,subfertility,condition_subfertility
+GSE75248,mom_education,education
+GSE75248,maternalrace,race_ethnicity
+GSE75248,bmi,bmi
+GSE75248,placenta_al,placenta_al
+GSE75248,placenta_cr,placenta_cr
+GSE75248,placenta_co,placenta_co
+GSE75248,placenta_ni,placenta_ni
+GSE75248,placenta_as,placenta_as
+GSE75248,placenta_se,placenta_se
+GSE75248,placenta_pb,placenta_pb
+GSE75248,reffreeewasomega1,reffreeewasomega1
+GSE75248,reffreeewasomega2,reffreeewasomega2
+GSE75248,reffreeewasomega3,reffreeewasomega3
+GSE75248,reffreeewasomega4,reffreeewasomega4
+GSE98224,diagnosis,condition
+GSE98224,tissue,tissue
+GSE98224,maternal age,maternal_age
+GSE98224,bmi,bmi
+GSE98224,maternal ethnicity,race_ethnicity
+GSE98224,maternal blood type,maternal_blood_type
+GSE98224,nulliparous,parity_nulliparous
+GSE98224,previous miscarriage,previous_miscarriage
+GSE98224,previous hypertensive pregnancy,previous_pih
+GSE98224,mean uterine pi,uta_pi_mean
+GSE98224,mean umbilical pi,uma_pi_mean
+GSE98224,max systolic,sbp_max
+GSE98224,max diastolic,dbp_max
+GSE98224,mode proteinuria,protenuria_mode
+GSE98224,hellp,condition_hellp
+GSE98224,iugr,condition_fgr
+GSE98224,attempted vaginal delivery,attempted_vaginal_delivery
+GSE98224,mod,mod
+GSE98224,ga week,GA
+GSE98224,ga day,GA_day
+GSE98224,gender,fetal_sex
+GSE98224,fetal weight z-score,birth_weight_z
+GSE98224,apgar score 1min,apgar_min1
+GSE98224,apgar score 5min,apgra_min5
+GSE98224,placenta weight z-score,placenta_weight_z
+GSE98224,cord diameter,cord_diameter
+GSE98224,nicu transfer,nicu
+GSE98224,chorioamnionitis,condition_chorioamnionitis
+E_MTAB_9312,organism,organism
+E_MTAB_9312,gestational age,GA
+E_MTAB_9312,sex,fetal_sex
+E_MTAB_9312,disease,condition
+E_MTAB_9312,organism part,tissue
+E_MTAB_9312,individual,subject_id
+E_MTAB_9312,developmental stage,trimester
+GSE115508,patient id,subject_id
+GSE115508,tissue,tissue
+GSE115508,pathology group,condition
+GSE115508,fetal sex,fetal_sex
+GSE115508,gestational age,GA
+GSE115508,850k plate,plate
+GSE115508,850k sentrix_id,sentrix_id
+GSE115508,850k sentrix_position,sentrix_position
+GSE144129,infant sex,fetal_sex
+GSE144129,maternal age (years),maternal_age
+GSE144129,birthweight (grams),birth_weight
+GSE144129,gestational age (weeks),GA
+GSE144129,mother education,education
+GSE144129,tissue,tissue
+GSE169598,Sex,fetal_sex
+GSE169598,gestational age weeks,GA
+GSE169598,smoking,smoker_smoking
+GSE200659,tissue,tissue
+GSE200659,Sex,fetal_sex
+GSE200659,gestational diabetes,condition_gestational_diabetes
+GSE200659,maternal age,maternal_age
+GSE200659,pre-pregnancy body mass index,bmi_prepreg
+GSE200659,primiparity,parity_primiparous
+GSE200659,gestational age at birth,GA
+GSE200659,mode of delivery,mod
+GSE200659,slide,slide
+GSE204977,Sex,fetal_sex
+GSE204977,lga status,condition_lga
+GSE204977,gestational diabetes,condition_gestational_diabetes
+GSE204977,maternal age,maternal_age
+GSE204977,pre-pregnancy body mass index,bmi_prepreg
+GSE204977,primiparity,parity_primiparous
+GSE204977,gestational age at birth,GA
+GSE204977,cesarean section,mod_cs
+GSE204977,slide,slide
+GSE228149,gender,fetal_sex
+GSE228149,tissue,tissue
+GSE232778,sentrix_id,sentrix_id
+GSE232778,sentrix_position,sentrix_position
+GSE232778,sample_id,sample_id
+GSE232778,case_id,subject_id
+GSE232778,cohort,batch_cohort
+GSE232778,batch,batch_nih
+GSE232778,sentrix,sentrix
+GSE232778,replicate_removed,replicate_removed
+GSE232778,Sex,fetal_sex
+GSE232778,birthweight_g,birth_weight
+GSE232778,birthweight_sd,birth_weight_sd
+GSE232778,ga_reported,GA
+GSE232778,planet_ga_rrpc,GA_planet_rrpc
+GSE232778,ethnicity_selfreport,race_ethnicity
+GSE232778,planet_prob_african,planet_prob_african
+GSE232778,planet_prob_asian,planet_prob_asian
+GSE232778,planet_prob_european,planet_prob_european
+GSE232778,aims_coordinate_1,aims_coordinate_1
+GSE232778,aims_coordinate_2,aims_coordinate_2
+GSE232778,aims_coordinate_3,aims_coordinate_3
+GSE232778,syncytiotrophoblast,syncytiotrophoblast_cell
+GSE232778,cytotrophoblast,cytotrophoblast_cell
+GSE232778,stromal,stromal_cell
+GSE232778,endothelial,endothelial_cell
+GSE232778,hofbauer,hofbauer_cell
+GSE232778,nrbc,nrb_cell
+GSE167885,tissue,tissue
+GSE167885,birthweight (grams),birth_weight
+GSE167885,infant sex,fetal_sex
+GSE167885,mage (age of mother) (years),maternal_age
+GSE167885,bmi (body mass index),bmi

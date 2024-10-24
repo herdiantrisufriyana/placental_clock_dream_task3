@@ -1,0 +1,89 @@
+Dataset_ID,old_colname,old_condition,new_colname,new_condition
+GSE100197,condition,"Control, preterm (vs. FGR/PE)",y_fgr,No
+GSE100197,condition,"Control, preterm (vs. FGR/PE)",y_pe,No
+GSE100197,condition,"Control, preterm (vs. FGR/PE)",y_pe_onset,Not applicable
+GSE100197,condition,"Control, preterm (vs. FGR/PE)",y_preterm,Yes
+GSE100197,condition,"Control, term (vs. FGR/PE)",y_fgr,No
+GSE100197,condition,"Control, term (vs. FGR/PE)",y_pe,No
+GSE100197,condition,"Control, term (vs. FGR/PE)",y_preterm,No
+GSE100197,condition,"Control, term (vs. FGR/PE)",y_pe_onset,Not applicable
+GSE100197,condition,FGR,y_fgr,Yes
+GSE100197,condition,FGR,y_pe,No
+GSE100197,condition,FGR,y_pe_onset,Not applicable
+GSE100197,condition,FGR,y_preterm,Unspecified
+GSE100197,condition,"PE, early-onset",y_fgr,Unspecified
+GSE100197,condition,"PE, early-onset",y_pe,Yes
+GSE100197,condition,"PE, early-onset",y_pe_onset,Early
+GSE100197,condition,"PE, early-onset",y_preterm,Yes
+GSE100197,condition,"PE, late-onset",y_fgr,Unspecified
+GSE100197,condition,"PE, late-onset",y_pe,Yes
+GSE100197,condition,"PE, late-onset",y_pe_onset,Late
+GSE100197,condition,"PE, late-onset",y_preterm,Unspecified
+GSE128827,condition,Control (vs. FGR),y_fgr,No
+GSE128827,condition,FGR,y_fgr,Yes
+GSE128827,condition_preeclamptic,Control (vs. PE),y_pe,No
+GSE69502,condition,Anencephaly,y_anencephaly,Yes
+GSE69502,condition,Anencephaly,y_spina_bifida,No
+GSE69502,condition,Control (vs. Anenchephaly/Spina bifida),y_anencephaly,No
+GSE69502,condition,Control (vs. Anenchephaly/Spina bifida),y_spina_bifida,No
+GSE69502,condition,Spina bifida,y_anencephaly,No
+GSE69502,condition,Spina bifida,y_spina_bifida,Yes
+GSE74738,condition,Control (vs. Diandric triploid/FGR/Miscarriage),y_diandric_triploid,No
+GSE74738,condition,Control (vs. Diandric triploid/FGR/Miscarriage),y_fgr,No
+GSE74738,condition,Control (vs. Diandric triploid/FGR/Miscarriage),y_miscarriage,No
+GSE74738,condition,Diandric triploid,y_diandric_triploid,Yes
+GSE74738,condition,Diandric triploid,y_fgr,Unspecified
+GSE74738,condition,Diandric triploid,y_miscarriage,Unspecified
+GSE74738,condition,FGR,y_diandric_triploid,No
+GSE74738,condition,FGR,y_fgr,Yes
+GSE74738,condition,FGR,y_miscarriage,Unspecified
+GSE74738,condition,Miscarriage,y_diandric_triploid,Unspecified
+GSE74738,condition,Miscarriage,y_fgr,Unspecified
+GSE74738,condition,Miscarriage,y_miscarriage,Yes
+GSE75196,condition,Control (vs. PE),y_pe,No
+GSE75196,condition,PE,y_pe,Yes
+GSE75248,condition,Control (vs. SGA/LGA),y_sga,No
+GSE75248,condition,Control (vs. SGA/LGA),y_lga,No
+GSE75248,condition,LGA,y_sga,No
+GSE75248,condition,LGA,y_lga,Yes
+GSE75248,condition,SGA,y_sga,Yes
+GSE75248,condition,SGA,y_lga,No
+GSE75248,condition_gestational_diabetes,Control (vs. GDM),y_gdm,No
+GSE75248,condition_gestational_diabetes,GDM,y_gdm,Yes
+GSE75248,condition_ivf,No,y_ivf,No
+GSE75248,condition_ivf,Yes,y_ivf,Yes
+GSE75248,condition_subfertility,No,y_subfertility,No
+GSE75248,condition_subfertility,Yes,y_subfertility,Yes
+GSE98224,condition,Control (vs. PE),y_pe,No
+GSE98224,condition,PE,y_pe,Yes
+GSE98224,condition_hellp,Control (vs. HELLP),y_hellp,No
+GSE98224,condition_hellp,HELLP,y_hellp,Yes
+GSE98224,condition_fgr,Control (vs. FGR),y_fgr,No
+GSE98224,condition_fgr,FGR,y_fgr,Yes
+GSE98224,condition_chorioamnionitis,Control (vs. Chorioamnionitis),y_chorioamnionitis,No
+E_MTAB_9312,condition,Control,y_fgr,No
+E_MTAB_9312,condition,Control,y_pe,No
+E_MTAB_9312,condition,Control,y_pe_onset,Not applicable
+E_MTAB_9312,condition,Control,y_preterm,No
+E_MTAB_9312,condition,Control,y_anencephaly,No
+E_MTAB_9312,condition,Control,y_spina_bifida,No
+E_MTAB_9312,condition,Control,y_diandric_triploid,No
+E_MTAB_9312,condition,Control,y_miscarriage,No
+E_MTAB_9312,condition,Control,y_sga,No
+E_MTAB_9312,condition,Control,y_lga,No
+E_MTAB_9312,condition,Control,y_gdm,No
+E_MTAB_9312,condition,Control,y_ivf,No
+E_MTAB_9312,condition,Control,y_subfertility,No
+E_MTAB_9312,condition,Control,y_hellp,No
+E_MTAB_9312,condition,Control,y_chorioamnionitis,No
+GSE115508,condition,Chorioamnionitis,y_chorioamnionitis,Yes
+GSE115508,condition,Control (vs. Chorioamnionitis),y_chorioamnionitis,No
+GSE71678,condition_gestational_diabetes,Control (vs. GDM),y_gdm,No
+GSE71678,condition_gestational_diabetes,GDM,y_gdm,Yes
+GSE200659,condition_gestational_diabetes,GDM,y_gdm,Yes
+GSE204977,condition_gestational_diabetes,Control (vs. GDM),y_gdm,No
+GSE204977,condition_gestational_diabetes,GDM,y_gdm,Yes
+GSE204977,condition_lga,Control (vs. LGA),y_sga,Unspecified
+GSE204977,condition_lga,Control (vs. LGA),y_lga,No
+GSE204977,condition_lga,LGA,y_sga,No
+GSE204977,condition_lga,LGA,y_lga,Yes
