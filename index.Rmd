@@ -2271,7 +2271,7 @@ ga_res_conds_dmp0 <-
   ga_res_conds_data0 |>
   imap(~ list(data0 = .x, data = ga_res_conds_data[[.y]]))
 
-var_ga_res_conds_small <- c("anencephaly", "diandric_triploid", "miscarriage")
+var_ga_res_conds_small <- c("lga")
 
 for(i in var_ga[!var_ga %in% var_ga_res_conds_small]){
   ga_res_conds_dmp0[[i]]$dmp <-
