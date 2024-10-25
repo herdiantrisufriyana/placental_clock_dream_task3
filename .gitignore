@@ -95,3 +95,5 @@ inst/extdata/*
 !inst/extdata/lga_pred_prob.csv
 !data/chorioamnionitis_pred_set_rownames.rds
 !inst/extdata/chorioamnionitis_pred_prob.csv
+!data/ga_resfull_rf_est_set_rownames.rds
+!inst/extdata/ga_resfull_rf_est_predictions.csv
