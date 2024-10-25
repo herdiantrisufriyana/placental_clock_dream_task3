@@ -2,41 +2,6 @@
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-
-def test_idx(prefix, seed, task='classification'):
-    # Load the training dataset
-    data = pd.read_csv(f'inst/extdata/{prefix}_train_set.csv')
-
-    # Add an explicit index column to track row indices
-    data['idx'] = range(1, len(data) + 1)  # Starting index from 1
-
-    # Separate features and target
-    X = data.drop(columns=['outcome'])
-    y = data['outcome'].astype(float if task == 'regression' else int)
-
-    # Split data into training and testing sets
-    if task == 'regression':
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
-    else:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=seed)
-    
-    # Extract the indices for X_test to use as idx
-    idx = X_test['idx']
-
-    # Convert idx to a DataFrame
-    test_idx_df = pd.DataFrame(idx, columns=['idx'])
-    test_idx_df.reset_index(drop=True, inplace=True)  # Reset index to make sure it starts from 0
-
-    # Save the predicted outcomes to a CSV file
-    test_idx_path = f'inst/extdata/{prefix}_test_idx.csv'
-    test_idx_df.to_csv(test_idx_path, index=False)
-    print(f"Test indices saved at {test_idx_path}")
-
-
-
-import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from joblib import dump
