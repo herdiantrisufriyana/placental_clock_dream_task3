@@ -97,3 +97,11 @@ inst/extdata/*
 !inst/extdata/chorioamnionitis_pred_prob.csv
 !data/ga_resfull_rf_est_set_rownames.rds
 !inst/extdata/ga_resfull_rf_est_predictions.csv
+!data/ga_res_conds_preterm_est_set_rownames.rds
+!inst/extdata/ga_res_conds_preterm_est_predictions.csv
+!data/ga_res_conds_gdm_est_set_rownames.rds
+!inst/extdata/ga_res_conds_gdm_est_predictions.csv
+!data/ga_res_conds_lga_est_set_rownames.rds
+!inst/extdata/ga_res_conds_lga_est_predictions.csv
+!data/ga_res_conds_chorioamnionitis_est_set_rownames.rds
+!inst/extdata/ga_res_conds_chorioamnionitis_est_predictions.csv
