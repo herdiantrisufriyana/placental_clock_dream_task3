@@ -1,10 +1,10 @@
-stratified_performance <- function(eval_data, model_name){
+stratified_performance <- function(eval_data, model_name, subchallenge=2){
   
   leaderboard_results <-
     submission |>
     filter(model == model_name) |>
-    left_join(performance, by = join_by(sub)) |>
-    left_join(leaderboard, by = join_by(metric)) |>
+    left_join(performance, by = join_by(sub, task)) |>
+    left_join(leaderboard, by = join_by(metric, task)) |>
     mutate(lb = val, ub = val) |>
     rename(strata = code, level = rank, avg = val) |>
     mutate(strata = "Leaderboard", level = "Yes") |>
@@ -19,13 +19,13 @@ stratified_performance <- function(eval_data, model_name){
         ,avg = c(0, 0, 0)
         ,lb = c(0, 0, 0)
         ,ub = c(0, 0, 0)
+        ,task = subchallenge
       ) |>
-      left_join(leaderboard, by = join_by(metric))
+      left_join(leaderboard, by = join_by(metric, task))
   }
   
   results <-
     var_ga |>
-    c(var_ga_non_conds, "fetal_sex", "smoker") |>
     unique() |>
     c("trimester", "Dataset_ID", "all") |>
     imap(
@@ -36,8 +36,10 @@ stratified_performance <- function(eval_data, model_name){
         eval_prediction()
     ) |>
     reduce(rbind) |>
-    left_join(leaderboard, by = join_by(metric)) |>
-    rbind(leaderboard_results)
+    mutate(task = subchallenge) |>
+    left_join(leaderboard, by = join_by(metric, task)) |>
+    rbind(leaderboard_results) |>
+    select(-task)
   
   results |>
     left_join(
