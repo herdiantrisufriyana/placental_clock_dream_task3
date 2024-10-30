@@ -97,36 +97,6 @@ def load_and_predict(prefix, batch_size=5000):
 import pandas as pd
 from joblib import load
 
-def load_and_predict_probabilities_by_imp(prefix):
-    # Load the scaler and model
-    scaler = load(f'inst/extdata/{prefix}_imp_scaler.joblib')
-    best_model = load(f'inst/extdata/{prefix}_imp_best_model.joblib')
-
-    # Load the new dataset for prediction
-    X_new = pd.read_csv(f'inst/extdata/{prefix}_pred_set.csv')
-
-    # Standardize the new dataset using the same scaler
-    X_new_scaled = scaler.transform(X_new)
-
-    # Make probability predictions
-    if hasattr(best_model, 'predict_proba'):
-        probabilities = best_model.predict_proba(X_new_scaled)[:, 1]  # Assuming binary classification and you want the probability of class 1
-    else:
-        raise ValueError("This model does not support probability predictions.")
-
-    # Convert probabilities to a DataFrame
-    probabilities_df = pd.DataFrame(probabilities, columns=['predicted_probability'])
-
-    # Save the predicted probabilities to a CSV file
-    probabilities_path = f'inst/extdata/{prefix}_imp_prob.csv'
-    probabilities_df.to_csv(probabilities_path, index=False)
-    print(f"Predicted probabilities saved at {probabilities_path}")
-
-
-
-import pandas as pd
-from joblib import load
-
 def load_and_predict_probabilities(prefix):
     # Load the scaler and model
     scaler = load(f'inst/extdata/{prefix}_scaler.joblib')
@@ -151,5 +121,31 @@ def load_and_predict_probabilities(prefix):
     probabilities_path = f'inst/extdata/{prefix}_prob.csv'
     probabilities_df.to_csv(probabilities_path, index=False)
     print(f"Predicted probabilities saved at {probabilities_path}")
+
+
+
+import pandas as pd
+from joblib import load
+
+def save_model_coefficients(prefix):
+    # Load the model
+    best_model = load(f'inst/extdata/{prefix}_best_model.joblib')
+
+    # Check if the model has the 'coef_' attribute (necessary for models that provide coefficients)
+    if hasattr(best_model, 'coef_'):
+        # Retrieve coefficients and flatten them
+        coefficients = best_model.coef_.flatten()  # Flatten to ensure it works for any model structure
+
+        # Create a DataFrame to store weights
+        coef_df = pd.DataFrame({
+            'weight': coefficients
+        })
+
+        # Save to CSV file
+        coef_path = f'inst/extdata/{prefix}_coefficients.csv'
+        coef_df.to_csv(coef_path, index=False)
+        print(f"Coefficients saved at {coef_path}")
+    else:
+        print("This model does not support coefficient retrieval.")
 
 
