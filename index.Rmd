@@ -3096,7 +3096,16 @@ ggsave("doc/figure3b.eps", height = 9, width = 12, units = "in")
 ggsave("doc/figure3b.svg", height = 9, width = 12, units = "in")
 ```
 
-```{r figure-s9, echo=FALSE}
+```{r figure-s9, echo=FALSE, fig.height=9, fig.width=12}
+stratified_plot(
+  ga_res_conds_pred_850k_est_eval_plot, "Res-Conds-GA† (850k)"
+  ,ga_res_conds_pred_est_eval_plot, "Res-Conds-GA†"
+  ,ga_res_comb_850k_est_eval_plot, "Res-Comb-GA (850k)"
+  ,ga_res_comb_est_eval_plot, "Res-Comb-GA"
+)
+```
+
+```{r figure-s10, echo=FALSE}
 list(
     ga_est_eval
     ,ga_850k_est_eval
