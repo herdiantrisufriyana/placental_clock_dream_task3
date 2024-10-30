@@ -1,0 +1,7 @@
+metric,current_best,task
+RMSE,0.997,1
+MAE,0.743,1
+r,0.970,1
+RMSE,0.956,2
+MAE,0.721,2
+r,0.976,2

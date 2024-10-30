@@ -1,0 +1,10 @@
+model,sub,code,rank,task
+"Res-CR-GA* (450k)",1,"testthewaters",7,1
+"Resfull-GA* (450k)",2,"isitthedarkhorse",6,1
+"Res-GA* (450k)",3,"clearcut",8,1
+"Res-CPG-PR-GA (450k)",4,"stepback",3,1
+"Res-CPG-GA (450k)",5,"stepbackfurther",5,1
+"Res-CPG-rev-GA (450k)",6,"stepbackabit",4,1
+"Res-Conds-GA§ (450k)",7,"slidingdoors",2,1
+"Res-Comb-GA (450k)",8,"pointofdivergence",1,1
+"Resfull-GA* (450k) -test",1,"testthedarkhorse",1,2
