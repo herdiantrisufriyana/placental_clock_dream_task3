@@ -329,14 +329,22 @@ beta_norm_bmiq <-
   column_to_rownames(var="cpg_name")
 
 saveRDS(beta_norm_bmiq, "data/beta_norm_bmiq.rds")
+
+rownames(beta_norm_bmiq) |>
+  saveRDS("data/beta_norm_bmiq_rownames.rds")
+  setdiff(rownames(beta_norm_bmiq))
 ```
 
-```{r Load pre-loaded the pre-computed BMIQ, include=FALSE}
+```{r Load pre-loaded the pre-computed BMIQ, eval=FALSE, include=FALSE}
 beta_norm_bmiq <- readRDS("data/beta_norm_bmiq.rds")
 ```
 
+```{r Transpose the BMIQ feature data, eval=FALSE, include=FALSE}
+saveRDS(colnames(beta_norm_bmiq), "data/df_train_colnames.rds")
+```
+
 ```{r Update annotation sample list, include=FALSE}
-ano <- ano0[colnames(beta_norm_bmiq), , drop = FALSE]
+ano <- ano0[readRDS("data/df_train_colnames.rds"), , drop = FALSE]
 
 ano_ori <-
   ano_ori0[names(ano_ori0) != "E_MTAB_9312"] |>
@@ -361,10 +369,6 @@ ano_ori <- ano_ori[names(ano_ori0)]
 ano_ori <- ano_ori[sapply(ano_ori, \(x) nrow(x) > 0)]
 ```
 
-```{r Transpose the BMIQ feature data, eval=FALSE, include=FALSE}
-saveRDS(rownames(ano), "data/df_train_colnames.rds")
-```
-
 ```{r table-s3, echo=FALSE}
 ano |>
   select(`GEO Number` = Dataset_ID) |>
@@ -375,9 +379,9 @@ ano |>
   kable_classic()
 ```
 
-# Predictive modeling
+# Phenotype preprocessing
 
-## Phenotype preprocessing
+## Phenotype preprocessing for conditions
 
 ```{r Identify phenotype chars, eval=FALSE, include=FALSE}
 ano_ori_chars0 <-
@@ -714,7 +718,7 @@ ano_ori_ga_conds0 <-
   select(-Array, -Sample_Name)
 ```
 
-## Phenotype imputation
+## Phenotype imputation for conditions
 
 ### FGR imputation
 
@@ -824,8 +828,19 @@ preterm$imp_set |>
   saveRDS("data/preterm_imp_set_rownames.rds")
 ```
 
-```{r Preterm imputation - Load pre-identified DMPs, include=FALSE}
+```{r Pret prediction - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 preterm_dmp <- readRDS("data/preterm_dmp.rds")
+
+data.frame(probe_id = rownames(preterm_dmp[[1]])) |>
+  write_csv("inst/extdata/preterm_dmp.csv")
+```
+
+```{r Pret imputation - Load pre-written DMPs, include=FALSE}
+preterm_dmp <- list()
+
+preterm_dmp$Yes_to_No <-
+  read_csv("inst/extdata/preterm_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
 ```
 
 ```{r Preterm imputation - Read imputation results, include=FALSE}
@@ -887,8 +902,19 @@ gdm$imp_set |>
   saveRDS("data/gdm_imp_set_rownames.rds")
 ```
 
-```{r GDM imputation - Load pre-identified DMPs, include=FALSE}
+```{r GDM prediction - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 gdm_dmp <- readRDS("data/gdm_dmp.rds")
+
+data.frame(probe_id = rownames(gdm_dmp[[1]])) |>
+  write_csv("inst/extdata/gdm_dmp.csv")
+```
+
+```{r GDM imputation - Load pre-written DMPs, include=FALSE}
+gdm_dmp <- list()
+
+gdm_dmp$Yes_to_No <-
+  read_csv("inst/extdata/gdm_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
 ```
 
 ```{r GDM imputation - Read imputation results, include=FALSE}
@@ -958,8 +984,19 @@ lga$imp_set |>
   saveRDS("data/lga_imp_set_rownames.rds")
 ```
 
-```{r LGA imputation - Load pre-identified DMPs, include=FALSE}
+```{r LGA prediction - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 lga_dmp <- readRDS("data/lga_dmp.rds")
+
+data.frame(probe_id = rownames(lga_dmp[[1]])) |>
+  write_csv("inst/extdata/lga_dmp.csv")
+```
+
+```{r LGA imputation - Load pre-written DMPs, include=FALSE}
+lga_dmp <- list()
+
+lga_dmp$Yes_to_No <-
+  read_csv("inst/extdata/lga_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
 ```
 
 ```{r LGA imputation - Read imputation results, include=FALSE}
@@ -1053,8 +1090,19 @@ chorioamnionitis$imp_set |>
   saveRDS("data/chorioamnionitis_imp_set_rownames.rds")
 ```
 
-```{r Chori imputation - Load pre-identified DMPs, include=FALSE}
+```{r Chori prediction - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 chorioamnionitis_dmp <- readRDS("data/chorioamnionitis_dmp.rds")
+
+data.frame(probe_id = rownames(chorioamnionitis_dmp[[1]])) |>
+  write_csv("inst/extdata/chorioamnionitis_dmp.csv")
+```
+
+```{r Chori imputation - Load pre-written DMPs, include=FALSE}
+chorioamnionitis_dmp <- list()
+
+chorioamnionitis_dmp$Yes_to_No <-
+  read_csv("inst/extdata/chorioamnionitis_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
 ```
 
 ```{r Chorioamnionitis imputation - Read imputation results, include=FALSE}
@@ -1120,7 +1168,99 @@ saveRDS(ano_ori_ga_conds, "data/ano_ori_ga_conds.rds")
 ano_ori_ga_conds <- readRDS("data/ano_ori_ga_conds.rds")
 ```
 
-## Phenotype correlation matrix
+## Phenotype preprocessing for non-conditions
+
+```{r GA and non-conditions of phenotype chars, eval=FALSE, include=FALSE}
+ano_ori_ga_non_conds0 <-
+  ano_ori_chars |>
+  bind_rows() |>
+  separate(
+    sentrix_position
+    ,c("sentrix_position_R", "sentrix_position_C")
+    ,sep = "C"
+  ) |>
+  mutate_at("sentrix_position_C", \(x) paste0("C", x)) |>
+  select(-sentrix_id) |>
+  separate(
+    sentrix
+    ,c("sentrix_id", "sentrix_position")
+    ,sep = "_"
+  ) |>
+  select(-sentrix_position)  |>
+  mutate(
+    smoker =
+      ifelse(
+        !is.na(smoker_smoking)
+        ,smoker_smoking
+        ,NA
+      )
+  ) |>
+  select(-smoker_smoking) |>
+  rename(placenta = tissue) |>
+  mutate(
+    placenta =
+      ifelse(str_detect(placenta, "unspecified"), NA, placenta)
+  )
+
+ano_ori_ga_non_conds0 <-
+  ano_ori_ga_non_conds0 |>
+  select_at(
+    ano_ori_ga_non_conds0 |>
+      colnames() |>
+      sapply(\(x) !str_detect(x, "^y_|_id$|GA")) |>
+      which()
+  ) |>
+  select_if(\(x) length(unique(x)[!is.na(unique(x))]) > 1) |>
+  rownames_to_column(var = "Sample_accession") |>
+  left_join(
+    ano[readRDS("data/df_train_colnames.rds"), ] |>
+      select(Sample_accession, Dataset_ID, GA)
+    , by = join_by(Sample_accession)
+  ) |>
+  column_to_rownames(var = "Sample_accession") |>
+  select(Dataset_ID, GA, everything()) |>
+  mutate(ceiled_GA = ceiling(GA))
+
+var_ga_non_conds_abn <-
+  c("mod"
+    ,"nicu"
+    ,"mod_cs"
+    ,"attempted_vaginal_delivery"
+  )
+
+ano_ori_ga_non_conds0 <-
+  ano_ori_ga_non_conds0 |>
+  select_at(
+    ano_ori_ga_non_conds0 |>
+      colnames() |>
+      setdiff(var_ga_non_conds_abn)
+  )
+
+var_ga_non_conds_multinom <-
+  c("sentrix_position_R"
+    ,"race_ethnicity"
+    ,"education"
+    ,"maternal_blood_type"
+  )
+
+ano_ori_ga_non_conds0 <-
+  ano_ori_ga_non_conds0 |>
+  select_if(!colnames(ano_ori_ga_non_conds0) %in% var_ga_non_conds_multinom)
+```
+
+```{r Do not need to apply imputation for non-conds, eval=FALSE, include=FALSE}
+ano_ori_ga_non_conds <- ano_ori_ga_non_conds0
+
+saveRDS(ano_ori_ga_non_conds, "data/ano_ori_ga_non_conds.rds")
+```
+
+```{r Load pre-applied imputation for non-conds, include=FALSE}
+ano_ori_ga_non_conds <- readRDS("data/ano_ori_ga_non_conds.rds")
+```
+
+# Predictive modeling
+
+## Phenotype correlation matrix among conditions and gestational age
 
 ```{r Identify and create missingness variables, include=FALSE}
 ano_ori_ga_conds_ms <-
@@ -1372,6 +1512,8 @@ ano_ori_ga_conds_plot[var_ga_ms]
 
 ### GA prediction
 
+Normal-GA model was trained using samples without 12 of 13 available conditions. They were significantly correlated to GA: (1) fetal growth restriction (FGR); (2) PE; (3) PE onset (early/late/not applicable); (4) hemolysis, elevated liver enzyme, and low platelet (HELLP) syndrome; (5) anencephaly; (6) spina bifida; (7) diandric triploid; (8) miscarriage; (9) preterm delivery; (10) gestational diabetes mellitus (GDM); (11) large-for-gestational-age (LGA) infant; (12) subfertility; and (13) chorioamnionitis. We excluded preterm delivery because it was related to the outcome, i.e., GA, simply by definition.
+
 ```{r GA prediction - Identify ds-DMPs-pred, eval=FALSE, include=FALSE}
 ga <- list()
 
@@ -1415,8 +1557,19 @@ ga$pred_set |>
   saveRDS("data/ga_est_set_rownames.rds")
 ```
 
-```{r GA prediction - Load pre-identified DMPs, include=FALSE}
+```{r GA prediction - Load pre-identified DMPs, eval=FALSE, include=FALSE}
 ga_dmp <- readRDS("data/ga_dmp.rds")
+
+data.frame(probe_id = rownames(ga_dmp[[1]])) |>
+  write_csv("inst/extdata/ga_dmp.csv")
+```
+
+```{r GA prediction - Load pre-written DMPs, include=FALSE}
+ga_dmp <- list()
+
+ga_dmp$NumericVariable <-
+  read_csv("inst/extdata/ga_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
 ```
 
 ```{r GA prediction - Read prediction results, include=FALSE}
@@ -1429,320 +1582,15 @@ ga_est_set_predictions <-
   column_to_rownames(var = "rowname")
 ```
 
-## Phenotype preprocessing among normal/spontaneous preterm pregnant women
-
-```{r GA and non-conditions of phenotype chars, eval=FALSE, include=FALSE}
-ano_ori_ga_non_conds0 <-
-  ano_ori_chars |>
-  imap(~ .x[ga$data[[.y]]$Sample_accession, , drop = FALSE]) |>
-  bind_rows() |>
-  separate(
-    sentrix_position
-    ,c("sentrix_position_R", "sentrix_position_C")
-    ,sep = "C"
+```{r GA prediction - Obtain coefficients, include=FALSE}
+ga_est_coefficients <-
+  read_csv(
+    "inst/extdata/ga_est_coefficients.csv"
+    ,show_col_types = FALSE
   ) |>
-  mutate_at("sentrix_position_C", \(x) paste0("C", x)) |>
-  select(-sentrix_id) |>
-  separate(
-    sentrix
-    ,c("sentrix_id", "sentrix_position")
-    ,sep = "_"
-  ) |>
-  select(-sentrix_position)  |>
-  mutate(
-    smoker =
-      ifelse(
-        !is.na(smoker_smoking)
-        ,smoker_smoking
-        ,NA
-      )
-  ) |>
-  select(-smoker_smoking) |>
-  rename(placenta = tissue) |>
-  mutate(
-    placenta =
-      ifelse(str_detect(placenta, "unspecified"), NA, placenta)
-  )
-
-ano_ori_ga_non_conds0 <-
-  ano_ori_ga_non_conds0 |>
-  select_at(
-    ano_ori_ga_non_conds0 |>
-      colnames() |>
-      sapply(\(x) !str_detect(x, "^y_|_id$|GA")) |>
-      which()
-  ) |>
-  select_if(\(x) length(unique(x)[!is.na(unique(x))]) > 1) |>
-  rownames_to_column(var = "Sample_accession") |>
-  left_join(
-    ano[readRDS("data/df_train_colnames.rds"), ] |>
-      select(Sample_accession, Dataset_ID, GA)
-    , by = join_by(Sample_accession)
-  ) |>
-  column_to_rownames(var = "Sample_accession") |>
-  select(Dataset_ID, GA, everything()) |>
-  mutate(ceiled_GA = ceiling(GA))
-
-var_ga_non_conds_abn <-
-  c("mod"
-    ,"nicu"
-    ,"mod_cs"
-    ,"attempted_vaginal_delivery"
-  )
-
-ano_ori_ga_non_conds0 <-
-  ano_ori_ga_non_conds0 |>
-  select_at(
-    ano_ori_ga_non_conds0 |>
-      colnames() |>
-      setdiff(var_ga_non_conds_abn)
-  )
-
-var_ga_non_conds_multinom <-
-  c("sentrix_position_R"
-    ,"race_ethnicity"
-    ,"education"
-    ,"maternal_blood_type"
-  )
-
-# ano_ori_ga_non_conds0_multinom <-
-#   ano_ori_ga_non_conds0 |>
-#   select_at(var_ga_non_conds_multinom) |>
-#   rownames_to_column(var = "Sample_accession") |>
-#   mutate_at("Sample_accession", \(x) factor(x, unique(x))) |>
-#   gather(variable, cat, -Sample_accession) |>
-#   mutate(cat = ifelse(cat == "Unspecified", NA, cat)) |>
-#   mutate_at(c("variable", "cat"), str_remove_all, "\\s+|[:punct:]+") |>
-#   unite(variable, variable, cat, sep = "_") |>
-#   mutate_at("variable", str_to_lower) |>
-#   mutate_at("variable", \(x) factor(x, unique(x))) |>
-#   mutate(value = "Yes") |>
-#   spread(variable, value, fill = "No") |>
-#   gather(variable, value, -Sample_accession) |>
-#   separate(variable, c("variable", "cat"), sep = "_") |>
-#   arrange(Sample_accession) |>
-#   group_by(Sample_accession, variable) |>
-#   mutate(missing = sum(cat == "na" & value == "Yes") == 1) |>
-#   ungroup() |>
-#   mutate(value = ifelse(missing, NA, value)) |>
-#   filter(cat != "na") |>
-#   unite(variable, variable, cat, sep = "_") |>
-#   select(-missing) |>
-#   mutate_at("variable", \(x) factor(x, unique(x))) |>
-#   spread(variable, value) |>
-#   column_to_rownames(var = "Sample_accession")
-
-ano_ori_ga_non_conds0 <-
-  ano_ori_ga_non_conds0 |>
-  select_if(!colnames(ano_ori_ga_non_conds0) %in% var_ga_non_conds_multinom)
-# 
-#   cbind(ano_ori_ga_non_conds0_multinom)
-```
-
-### Non-condition phenotype imputation
-
-#### Fetal sex imputation
-
-```{r Fetal sex imputation - Identify datasets, eval=FALSE, include=FALSE}
-fetal_sex_data0 <-
-  ano_ori_ga_non_conds0 |>
-  filter(!is.na(fetal_sex)) |>
-  select(Dataset_ID, outcome = fetal_sex)
-```
-
-#### Apply imputation for non-condition phenotypes
-
-```{r Apply imputation for non-conds, eval=FALSE, include=FALSE}
-ano_ori_ga_non_conds <- ano_ori_ga_non_conds0
-
-saveRDS(ano_ori_ga_non_conds, "data/ano_ori_ga_non_conds.rds")
-```
-
-```{r Load pre-applied imputation for non-conds, include=FALSE}
-ano_ori_ga_non_conds <- readRDS("data/ano_ori_ga_non_conds.rds")
-```
-
-### Non-condition phenotype correlation matrix
-
-```{r Identify and create missingness vars for non-conds, include=FALSE}
-ano_ori_ga_non_conds_ms <-
-  ano_ori_ga_non_conds |>
-  select(-Dataset_ID, -ceiled_GA)
-```
-
-```{r Check cat vars with a cat of 1 val for non-conds, include=FALSE}
-var_cat_val1_non_conds=
-  ano_ori_ga_non_conds_ms |>
-  select_if(!sapply(ano_ori_ga_non_conds_ms, is.numeric)) |>
-  gather(variable, value) |>
-  group_by_all() |>
-  summarize(n = n(), .groups = "drop") |>
-  filter(n <= 1) |>
-  pull(variable) |>
-  unique()
-```
-
-```{r Conduct correlation tests for each pair of non-conds, include=FALSE}
-correlation_matrix_non_conds <-
-  ano_ori_ga_non_conds_ms |>
-  colnames() |>
-  setdiff(var_cat_val1_non_conds) |>
-  combn(2) |>
-  as.data.frame() |>
-  t() |>
-  as.data.frame() |>
-  `rownames<-`(NULL) |>
-  filter(str_remove_all(V1, "^ms_") != str_remove_all(V2, "^ms_")) |>
-  pmap(
-    \(V1, V2)
-    pearson_fisher_aov_t(
-        ano_ori_ga_non_conds_ms[[V1]]
-        ,ano_ori_ga_non_conds_ms[[V2]]
-      ) |>
-      tidy() |>
-      filter(!is.na(p.value)) |>
-      select(p.value) |>
-      mutate(
-        V1 = V1
-        ,V2 = V2
-      )
-  ) |>
-  reduce(rbind) |>
-  mutate(p.value = p.adjust(p.value, "BH")) |>
-  rename(cor.p.value = p.value) |>
-  right_join(
-    ano_ori_ga_non_conds_ms |>
-      colnames() |>
-      combn(2) |>
-      as.data.frame() |>
-      t() |>
-      as.data.frame() |>
-      `rownames<-`(NULL)
-    ,by = join_by(V1, V2)
-  ) |>
-  mutate(
-    V1 = factor(V1, colnames(ano_ori_ga_non_conds_ms))
-    ,V2 = factor(V2, levels(V1))
-  ) |>
-  arrange(V1, V2)
-```
-
-```{r figure-s4, echo=FALSE, fig.height=5, fig.width=7}
-correlation_matrix_non_conds |>
-  mutate(
-    V1 = factor(V1, rev(levels(V1)))
-    ,sig =
-      ifelse(
-        is.na(cor.p.value)
-        ,ifelse(
-          str_remove_all(V1, "^ms_") == str_remove_all(V2, "^ms_")
-          ,"Not tested†"
-          ,ifelse(
-            V1 %in% var_cat_val1_non_conds
-            | V2 %in% var_cat_val1_non_conds
-            ,"Not tested‡"
-            ,"Not tested§"
-          )
-        )
-        ,ifelse(cor.p.value <= 0.05, "Significant", "Not significant")
-      ) |>
-      factor()
-    ,sig = factor(sig, levels(sig)[c(1, 4, 3, 2)])
-    ,cor.p.value = ifelse(cor.p.value<0.001, "<0.001", round(cor.p.value,3))
-  ) |>
-  ggplot(aes(V1, V2, fill = sig)) +
-  geom_tile(color = "white", na.rm = TRUE) +
-  # geom_text(aes(label = cor.p.value), size = 3, na.rm = TRUE) +
-  coord_flip() +
-  xlab("") +
-  ylab("") +
-  scale_fill_discrete("Significance*") +
-  theme(
-    panel.grid =
-      element_blank()
-    ,axis.text.x =
-      element_text(angle = 90, vjust = 0.5, hjust=1)
-  )
-```
-
-```{r Identify non-conditions related to GA, eval=FALSE, include=FALSE}
-var_ga_non_conds <-
-  correlation_matrix_non_conds |>
-  filter(V1 == "GA" | V2 == "GA") |>
-  filter(cor.p.value <= 0.05) |>
-  gather(variable, value, -cor.p.value) |>
-  filter(value != "GA") |>
-  filter(!str_detect(value, "^ms_")) |>
-  pull(value)
-
-saveRDS(var_ga_non_conds, "data/var_ga_non_conds.rds")
-```
-
-```{r Identify non-conditions related to GA, include=FALSE}
-var_ga_non_conds <- readRDS("data/var_ga_non_conds.rds")
-```
-
-```{r Identify non-condition missingness related to GA, include=FALSE}
-var_ga_ms_non_conds <-
-  correlation_matrix_non_conds |>
-  filter(V1 == "GA" | V2 == "GA") |>
-  filter(cor.p.value <= 0.05) |>
-  gather(variable, value, -cor.p.value) |>
-  filter(value != "GA") |>
-  filter(str_detect(value, "^ms_")) |>
-  pull(value) |>
-  str_remove_all("^ms_")
-```
-
-```{r GA distribution of training set per non-cond, include=FALSE}
-ano_ori_ga_non_conds_plot <-
-  ano_ori_ga_non_conds |>
-  colnames() |>
-  `names<-`(colnames(ano_ori_ga_non_conds)) |>
-  lapply(
-    \(x)
-    ano_ori_ga_non_conds |>
-      rename_at(x, \(x) "strata") |>
-      ggplot(aes(ceiled_GA, fill = strata)) +
-      geom_histogram(binwidth = 1, alpha = 0.5) +
-      geom_vline(xintercept = c(12, 26, 37, 42), lty = 2) +
-      facet_grid(~ Dataset_ID, scales = "free_x") +
-      coord_flip() +
-      scale_x_reverse(breaks = seq(0, 42, 2)) +
-      scale_fill_discrete(x) +
-      theme(
-        axis.title.x = element_blank()
-        ,axis.text.x = element_blank()
-        ,axis.ticks.x = element_blank()
-        ,strip.text.x = element_text(angle = 270)
-      )
-  )
-```
-
-```{r figure-s5, echo=FALSE}
-ano_ori_ga_non_conds_plot[var_ga_ms_non_conds]
-```
-
-```{r figure-s6, echo=FALSE}
-ano_ori_ga_non_conds_plot[var_ga_ms_non_conds]
-```
-
-### Anencephaly prediction
-
-```{r Anencephaly imputation - Identify datasets, eval=FALSE, include=FALSE}
-anencephaly_data0 <-
-  ano_ori_ga_conds0 |>
-  filter(!is.na(anencephaly)) |>
-  select(Dataset_ID, outcome = anencephaly)
-```
-
-### Spina bifida prediction
-
-```{r Spina bifida imputation - Identify datasets, eval=FALSE, include=FALSE}
-spina_bifida_data0 <-
-  ano_ori_ga_conds0 |>
-  filter(!is.na(spina_bifida)) |>
-  select(Dataset_ID, outcome = spina_bifida)
+  mutate(rowname = rownames(ga_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
 ```
 
 ### Preterm prediction
@@ -1841,6 +1689,17 @@ preterm_pred_set_predictions <-
   column_to_rownames(var = "rowname")
 ```
 
+```{r Preterm prediction - Obtain coefficients, include=FALSE}
+preterm_pred_coefficients <-
+  read_csv(
+    "inst/extdata/preterm_pred_coefficients.csv"
+    ,show_col_types = FALSE
+  ) |>
+  mutate(rowname = rownames(preterm_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
+```
+
 ### GDM prediction
 
 ```{r GDM prediction - Identify datasets, eval=FALSE, include=FALSE}
@@ -1934,6 +1793,17 @@ gdm_pred_set_predictions <-
   column_to_rownames(var = "rowname")
 ```
 
+```{r GDM prediction - Obtain coefficients, include=FALSE}
+gdm_pred_coefficients <-
+  read_csv(
+    "inst/extdata/gdm_pred_coefficients.csv"
+    ,show_col_types = FALSE
+  ) |>
+  mutate(rowname = rownames(gdm_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
+```
+
 ### LGA prediction
 
 ```{r LGA prediction - Identify datasets, eval=FALSE, include=FALSE}
@@ -2025,6 +1895,17 @@ lga_pred_set_predictions <-
   read_csv("inst/extdata/lga_pred_prob.csv", show_col_types = FALSE) |>
   mutate(rowname = readRDS("data/lga_pred_set_rownames.rds")) |>
   column_to_rownames(var = "rowname")
+```
+
+```{r LGA prediction - Obtain coefficients, include=FALSE}
+lga_pred_coefficients <-
+  read_csv(
+    "inst/extdata/lga_pred_coefficients.csv"
+    ,show_col_types = FALSE
+  ) |>
+  mutate(rowname = rownames(lga_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
 ```
 
 ### Chorioamnionitis prediction
@@ -2123,9 +2004,20 @@ chorioamnionitis_pred_set_predictions <-
   column_to_rownames(var = "rowname")
 ```
 
+```{r Chorioamnionitis prediction - Obtain coefficients, include=FALSE}
+chorioamnionitis_pred_coefficients <-
+  read_csv(
+    "inst/extdata/chorioamnionitis_pred_coefficients.csv"
+    ,show_col_types = FALSE
+  ) |>
+  mutate(rowname = rownames(chorioamnionitis_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
+```
+
 ### GA res-full prediction
 
-```{r GA res-full prediction - Prediction train set, include=FALSE}
+```{r GA res-full prediction - Prediction train set, eval=FALSE, include=FALSE}
 ga_resfull_est_train_set <-
   data.frame(
     path =
@@ -2196,7 +2088,9 @@ ga_resfull_rf_est_set_predictions <-
 
 ### GA res-conds prediction
 
-```{r GA res-conds prediction - Identify datasets, include=FALSE}
+Res-Conds-GA model was similar to Resfull-GA model but we used predictors of multiplication values for each predicted probability and residual GA estimated by a model for the corresponding condition. Specifically, we trained a model using beta values of DMPs among samples with a condition. The rationale was that the conditions have different trajectories of when pregnancies are terminated and each pregnant woman has a different set of probabilities of the conditions. We used the predicted probabilities of the conditions from the prediction (Resfull-GA) model for the conditions.
+
+```{r GA res-conds prediction - Identify datasets, eval=FALSE, include=FALSE}
 ga_res_conds_all_data <-
   ga_est_set_predictions |>
   rownames_to_column(var = "Sample_accession") |>
@@ -2232,7 +2126,7 @@ ga_res_conds_data0 |>
   )
 ```
 
-```{r GA res-conds prediction - Identify datasets continued, include=FALSE}
+```{r GA res-conds pred - Identify datasets cont, eval=FALSE, include=FALSE}
 ga_res_conds_data <-
   ga_res_conds_data0 |>
   lapply(pull, Dataset_ID) |>
@@ -2330,7 +2224,7 @@ ga_res_conds_dmp <-
   lapply(\(x) x$dmp)
 ```
 
-```{r GA res-conds prediction - Load pre-identified DMPs, include=FALSE}
+```{r GA res-conds pred - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 ga_res_conds_dmp0 <-
   ga_res_conds_data0 |>
   imap(~ list(data0 = .x, data = ga_res_conds_data[[.y]]))
@@ -2343,9 +2237,27 @@ for(i in var_ga){
 ga_res_conds_dmp <-
   ga_res_conds_dmp0 |>
   lapply(\(x) x$dmp)
+
+for(i in var_ga){
+  data.frame(probe_id = rownames(ga_res_conds_dmp[[i]][[1]])) |>
+    write_csv(paste0("inst/extdata/ga_res_conds_", i, "_dmp.csv"))
+}
 ```
 
-```{r GA res-conds prediction - Pred train set and write it, include=FALSE}
+```{r GA res-conds prediction - Load pre-written DMPs, include=FALSE}
+ga_res_conds_dmp <- list()
+
+for(i in var_ga){
+  ga_res_conds_dmp[[i]]$NumericVariable <-
+    read_csv(
+      paste0("inst/extdata/ga_res_conds_", i, "_dmp.csv")
+      , show_col_types = FALSE
+    ) |>
+    column_to_rownames(var = "probe_id")
+}
+```
+
+```{r GA res-conds pred - Pred train set & write it, eval=FALSE, include=FALSE}
 for(i in var_ga){
   ga_res_conds_est_train_set <-
     beta_norm_bmiq[
@@ -2371,7 +2283,7 @@ for(i in var_ga){
 }
 ```
 
-```{r GA res-conds prediction - Prediction set and write it, include=FALSE}
+```{r GA res-conds pred - Pred set and write it, eval=FALSE, include=FALSE}
 for(i in var_ga){
   ga_res_conds_est_set <-
     beta_norm_bmiq[
@@ -2394,7 +2306,7 @@ for(i in var_ga){
 }
 ```
 
-```{r GA res-conds prediction - Read prediction results, include=FALSE}
+```{r GA res-conds prediction - Read cond prediction results, include=FALSE}
 ga_res_conds_est_set_predictions <-
   var_ga |>
   `names<-`(var_ga) |>
@@ -2412,7 +2324,23 @@ ga_res_conds_est_set_predictions <-
   )
 ```
 
-```{r GA res-conds prediction - Prediction train set, include=FALSE}
+```{r GA res-conds prediction - Obtain coefficients, include=FALSE}
+ga_res_conds_est_coefficients <-
+  var_ga |>
+  `names<-`(var_ga) |>
+  pblapply(
+    \(x)
+      read_csv(
+          paste0("inst/extdata/ga_res_conds_", x, "_est_coefficients.csv")
+          ,show_col_types = FALSE
+        ) |>
+        mutate(rowname = rownames(ga_res_conds_dmp[[x]][[1]])) |>
+        column_to_rownames(var = "rowname") |>
+        filter(weight != 0)
+  )
+```
+
+```{r GA res-conds prediction - Prediction train set, eval=FALSE, include=FALSE}
 ga_res_conds_all_est_train_set <-
   list(ga_res_conds_pred = ga_resfull_est_train_set) |>
   lapply(
@@ -2492,7 +2420,9 @@ ga_res_conds_all_est_set_predictions <-
 
 ### GA res-comb prediction
 
-```{r GA res-comb prediction - Identify datasets, include=FALSE}
+Res-Comb- model was considered because other conditions might affect pregnancy termination, not limited to the 12 conditions. In Res-Comb-GA model, we limited the degree of freedom of residual fitting using known phenotype information (Res-Conds-GA), thus, the second model only fitted the unexplained residual GA (Res-CPG-GA), simply to boost the prediction. Res-Comb-GA model consisted of three models for <37, ≥37 and ≤40, and >40 weeks’ gestation estimated by normal-GA model. The model numbers and periods were also determined according to clinical knowledge and pursuing normal distribution of residual GA. The estimated delivery date falls on 40 week’s gestation. Before this date, a pregnant woman might seek termination in advance due to a medical condition. Meanwhile, a normal pregnant woman might seek for termination since the delivery date. We used three approaches, i.e., predicting residual GA during: (1) <37 weeks’ gestation only (Res-Comb-PR-GA); (2) both <37 and ≥37 and ≤40 weeks’ gestation, i.e., term before the estimated delivery date (Res-Comb-PRTB-GA); and (3) all the three periods (Res-Comb-GA).
+
+```{r GA res-comb prediction - Identify datasets, eval=FALSE, include=FALSE}
 ga_res_comb_data0 <-
   ga_est_set_predictions |>
   rownames_to_column(var = "Sample_accession") |>
@@ -2539,7 +2469,7 @@ list(
   )
 ```
 
-```{r GA res-comb prediction - Identify datasets continued, include=FALSE}
+```{r GA res-comb pred - Identify datasets cont, eval=FALSE, include=FALSE}
 ga_res_comb_pr_data0 <-
   ga_res_comb_data0 |>
   filter(ceiling(prediction_conds) <= 36) |>
@@ -2660,12 +2590,33 @@ ga_res_comb_tb_dmp <-
 saveRDS(ga_res_comb_tb_dmp, "data/ga_res_comb_tb_dmp.rds")
 ```
 
-```{r GA res-comb prediction - Load pre-identified DMPs, include=FALSE}
+```{r GA res-comb pred - Load and write pre-id DMPs, eval=FALSE, include=FALSE}
 ga_res_comb_pr_dmp <- readRDS("data/ga_res_comb_pr_dmp.rds")
+
+data.frame(probe_id = rownames(ga_res_comb_pr_dmp[[1]])) |>
+  write_csv("inst/extdata/ga_res_comb_pr_dmp.csv")
+
 ga_res_comb_tb_dmp <- readRDS("data/ga_res_comb_tb_dmp.rds")
+
+data.frame(probe_id = rownames(ga_res_comb_tb_dmp[[1]])) |>
+  write_csv("inst/extdata/ga_res_comb_tb_dmp.csv")
 ```
 
-```{r GA res-comb prediction - Prediction train set, include=FALSE}
+```{r GA res-comb prediction - Load pre-written DMPs, include=FALSE}
+ga_res_comb_pr_dmp <- list()
+
+ga_res_comb_pr_dmp$NumericVariable <-
+  read_csv("inst/extdata/ga_res_comb_pr_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
+
+ga_res_comb_tb_dmp <- list()
+
+ga_res_comb_tb_dmp$NumericVariable <-
+  read_csv("inst/extdata/ga_res_comb_tb_dmp.csv", show_col_types = FALSE) |>
+  column_to_rownames(var = "probe_id")
+```
+
+```{r GA res-comb prediction - Prediction train set, eval=FALSE, include=FALSE}
 ga_res_comb_pr_est_train_set <-
   beta_norm_bmiq[
     rownames(ga_res_comb_pr_dmp$NumericVariable)
@@ -2713,7 +2664,7 @@ ga_res_comb_tb_est_train_set |>
   write_csv("inst/extdata/ga_res_comb_tb_est_train_set.csv")
 ```
 
-```{r GA res-comb prediction - Prediction set, include=FALSE}
+```{r GA res-comb prediction - Prediction set, eval=FALSE, include=FALSE}
 ga_res_comb_pr_est_set <-
   beta_norm_bmiq[
     rownames(ga_res_comb_pr_dmp$NumericVariable)
@@ -2769,7 +2720,29 @@ ga_res_comb_tb_est_set_predictions <-
   column_to_rownames(var = "rowname")
 ```
 
+```{r GA res-comb prediction - Obtain coefficients, include=FALSE}
+ga_res_comb_pr_est_coefficients <-
+  read_csv(
+    "inst/extdata/ga_res_comb_pr_est_coefficients.csv"
+    ,show_col_type = FALSE
+  ) |>
+  mutate(rowname = rownames(ga_res_comb_pr_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
+
+ga_res_comb_tb_est_coefficients <-
+  read_csv(
+    "inst/extdata/ga_res_comb_tb_est_coefficients.csv"
+    ,show_col_type = FALSE
+  ) |>
+  mutate(rowname = rownames(ga_res_comb_tb_dmp[[1]])) |>
+  column_to_rownames(var = "rowname") |>
+  filter(weight != 0)
+```
+
 # Model evaluation
+
+Since some probes in sub-challenge were imputed, the model accuracy would be lower using the same pipeline (Figure 3). We did not refine the probe imputation techniques. It is because our question specifically asked whether correcting collider-restriction bias added a substantial improvement in placental clock accuracy. In this subchallenge, we also used Res-Comb-GA model which was trained using 450k probes.
 
 ```{r Leaderboard data, include=FALSE}
 leaderboard <-
@@ -2782,8 +2755,6 @@ performance <-
   read_csv("inst/extdata/leaderboard_performance.csv", show_col_types = FALSE)
 ```
 
-Since some probes in sub-challenge were imputed, the model accuracy would be lower using the same pipeline (Figure 3). We did not refine the probe imputation techniques. It is because our question specifically asked whether correcting collider-restriction bias added a substantial improvement in placental clock accuracy. Hence, we did not continue model development for Res-Comb-GA model for sub-challenge 2, which was on top of Res-Conds-GA model (Figure 2B). In this subchallenge, we used Res-Comb-GA model which was trained using 450k probes.
-
 ```{r Normal-GA model evaluation, include=FALSE}
 ga_est_eval <-
   ga_est_set_predictions |>
@@ -2795,12 +2766,31 @@ ga_est_eval_plot <- stratified_plot_element(ga_est_eval_results)
 ```
 
 ```{r Normal-GA (450k) model evaluation, include=FALSE}
-ga_450k_est_eval <- readRDS("data/ga_450k_est_eval.rds")
+ga_450k_est_eval <-
+  readRDS("data/ga_450k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
 
 ga_450k_est_eval_results <-
   stratified_performance(ga_450k_est_eval, "Normal-GA (450k)") 
 
 ga_450k_est_eval_plot <- stratified_plot_element(ga_450k_est_eval_results)
+```
+
+```{r Normal-GA (850k) model evaluation, include=FALSE}
+ga_850k_est_eval <-
+  readRDS("data/ga_850k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
+
+ga_850k_est_eval_results <-
+  stratified_performance(ga_850k_est_eval, "Normal-GA (850k)") 
+
+ga_850k_est_eval_plot <- stratified_plot_element(ga_850k_est_eval_results)
 ```
 
 ```{r ResfullRF-GA model evaluation, include=FALSE}
@@ -2825,13 +2815,33 @@ ga_resfull_rf_est_eval_plot <-
 ```
 
 ```{r ResfullRF-GA (450k) model evaluation, include=FALSE}
-ga_resfull_rf_450k_est_eval <- readRDS("data/ga_resfull_rf_450k_est_eval.rds")
+ga_resfull_rf_450k_est_eval <-
+  readRDS("data/ga_resfull_rf_450k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
 
 ga_resfull_rf_450k_est_eval_results <-
   stratified_performance(ga_resfull_rf_450k_est_eval, "Resfull-GA* (450k)")
 
 ga_resfull_rf_450k_est_eval_plot <-
   stratified_plot_element(ga_resfull_rf_450k_est_eval_results)
+```
+
+```{r ResfullRF-GA (850k) model evaluation, include=FALSE}
+ga_resfull_rf_850k_est_eval <-
+  readRDS("data/ga_resfull_rf_850k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
+
+ga_resfull_rf_850k_est_eval_results <-
+  stratified_performance(ga_resfull_rf_850k_est_eval, "Resfull-GA* (850k)")
+
+ga_resfull_rf_850k_est_eval_plot <-
+  stratified_plot_element(ga_resfull_rf_850k_est_eval_results)
 ```
 
 ```{r ResCondsPred-GA model evaluation, include=FALSE}
@@ -2857,7 +2867,11 @@ ga_res_conds_pred_est_eval_plot <-
 
 ```{r ResCondsPred-GA (450k) model evaluation, include=FALSE}
 ga_res_conds_pred_450k_est_eval <-
-  readRDS("data/ga_res_conds_pred_450k_est_eval.rds")
+  readRDS("data/ga_res_conds_pred_450k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
 
 ga_res_conds_pred_450k_est_eval_results <-
   stratified_performance(
@@ -2867,6 +2881,24 @@ ga_res_conds_pred_450k_est_eval_results <-
 
 ga_res_conds_pred_450k_est_eval_plot <-
   stratified_plot_element(ga_res_conds_pred_450k_est_eval_results)
+```
+
+```{r ResCondsPred-GA (850k) model evaluation, include=FALSE}
+ga_res_conds_pred_850k_est_eval <-
+  readRDS("data/ga_res_conds_pred_850k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
+
+ga_res_conds_pred_850k_est_eval_results <-
+  stratified_performance(
+    ga_res_conds_pred_850k_est_eval
+    ,"Res-Conds-GA§ (850k)"
+  )
+
+ga_res_conds_pred_850k_est_eval_plot <-
+  stratified_plot_element(ga_res_conds_pred_850k_est_eval_results)
 ```
 
 ```{r ResComb-GA model evaluation, include=FALSE}
@@ -2893,12 +2925,6 @@ ga_res_comb_est_eval <-
       rename(residual_prediction_tb = prediction)
     ,by = join_by(Sample_accession)
   ) |>
-  left_join(
-    ga_res_comb_ta_est_set_predictions |>
-      rownames_to_column(var = "Sample_accession") |>
-      rename(residual_prediction_ta = prediction)
-    ,by = join_by(Sample_accession)
-  ) |>
   mutate(
     prediction =
       prediction
@@ -2908,14 +2934,13 @@ ga_res_comb_est_eval <-
         ,ifelse(
           ceiling(prediction) >= 37 & ceiling(prediction) <= 40
           ,ifelse(is.na(residual_prediction_tb), 0, residual_prediction_tb)
-          ,ifelse(is.na(residual_prediction_ta), 0, residual_prediction_ta)
+          ,0
         )
       )
   ) |>
   select(
     -residual_prediction_pr
     ,-residual_prediction_tb
-    ,-residual_prediction_ta
   ) |>
   add_strata_data()
 
@@ -2928,7 +2953,11 @@ ga_res_comb_est_eval_plot <-
 
 ```{r ResComb-GA (450k) model evaluation, include=FALSE}
 ga_res_comb_450k_est_eval <-
-  readRDS("data/ga_res_comb_450k_est_eval.rds")
+  readRDS("data/ga_res_comb_450k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
 
 ga_res_comb_450k_est_eval_results <-
   stratified_performance(
@@ -2940,18 +2969,40 @@ ga_res_comb_450k_est_eval_plot <-
   stratified_plot_element(ga_res_comb_450k_est_eval_results)
 ```
 
+```{r ResComb-GA (850k) model evaluation, include=FALSE}
+ga_res_comb_850k_est_eval <-
+  readRDS("data/ga_res_comb_850k_est_eval.rds")[
+    ano0[readRDS("data/df_train_colnames.rds"), "Sample_accession", drop = TRUE]
+    ,
+    , drop =FALSE
+  ]
+
+ga_res_comb_850k_est_eval_results <-
+  stratified_performance(
+    ga_res_comb_850k_est_eval
+    ,"Res-Comb-GA (850k)"
+  )
+
+ga_res_comb_850k_est_eval_plot <-
+  stratified_plot_element(ga_res_comb_850k_est_eval_results)
+```
+
 ### Performance comparison
 
 ```{r Compile evaluation results, include=FALSE}
 eval_results <-
   rbind(
     ga_est_eval_results
+    ,ga_850k_est_eval_results
     ,ga_450k_est_eval_results
     ,ga_resfull_rf_est_eval_results
+    ,ga_resfull_rf_850k_est_eval_results
     ,ga_resfull_rf_450k_est_eval_results
     ,ga_res_conds_pred_est_eval_results
+    ,ga_res_conds_pred_850k_est_eval_results
     ,ga_res_conds_pred_450k_est_eval_results
     ,ga_res_comb_est_eval_results
+    ,ga_res_comb_850k_est_eval_results
     ,ga_res_comb_450k_est_eval_results
   ) |>
   filter(strata == "all") |>
@@ -2971,8 +3022,9 @@ eval_results |>
   kable_classic()
 ```
 
-```{r figure-s7, fig.height=2, fig.width=12}
-eval_results |>
+```{r Generate figure-s7, include=FALSE}
+figure_s7 <-
+  eval_results |>
   mutate_at("model", \(x) factor(x, rev(levels(x)))) |>
   ggplot(aes(model, avg, color = win)) +
   geom_errorbar(aes(ymin = lb, ymax = ub), width = 1) +
@@ -3014,42 +3066,63 @@ eval_results |>
   ylab("") +
   scale_color_discrete("Win") +
   coord_flip()
+```
 
-ggsave("figure2b.eps", height = 2, width = 12, units = "in")
-ggsave("figure2b.svg", height = 2, width = 12, units = "in")
+```{r figure-s7, echo=FALSE, fig.height=3, fig.width=12}
+figure_s7
+```
+
+```{r Save figure-s7, eval=FALSE, include=FALSE}
+ggsave("doc/figure2b.eps", height = 3, width = 12, units = "in")
+ggsave("doc/figure2b.svg", height = 3, width = 12, units = "in")
+```
+
+```{r Generate figure-s8, include=FALSE}
+figure_s8 <-
+  stratified_plot(
+  ga_est_eval_plot, "Normal-GA"
+    ,ga_resfull_rf_est_eval_plot, "Resfull-GA*"
+    ,ga_res_conds_pred_est_eval_plot, "Res-Conds-GA†"
+    ,ga_res_comb_est_eval_plot, "Res-Comb-GA"
+  )
 ```
 
 ```{r figure-s8, echo=FALSE, fig.height=9, fig.width=12}
-stratified_plot(
-  ga_est_eval_plot, "Normal-GA"
-  ,ga_resfull_rf_est_eval_plot, "Resfull-GA*"
-  ,ga_res_conds_pred_est_eval_plot, "Res-Conds-GA†"
-  ,ga_res_comb_est_eval_plot, "Res-Comb-GA"
-)
+figure_s8
+```
 
-ggsave("figure3b.eps", height = 9, width = 12, units = "in")
-ggsave("figure3b.svg", height = 9, width = 12, units = "in")
+```{r Save figure-s8, eval=FALSE, fig.height=9, fig.width=12, include=FALSE}
+ggsave("doc/figure3b.eps", height = 9, width = 12, units = "in")
+ggsave("doc/figure3b.svg", height = 9, width = 12, units = "in")
 ```
 
 ```{r figure-s9, echo=FALSE}
 list(
     ga_est_eval
+    ,ga_850k_est_eval
     ,ga_450k_est_eval
     ,ga_resfull_rf_est_eval
+    ,ga_resfull_rf_850k_est_eval
     ,ga_resfull_rf_450k_est_eval
     ,ga_res_conds_pred_est_eval
+    ,ga_res_conds_pred_850k_est_eval
     ,ga_res_conds_pred_450k_est_eval
     ,ga_res_comb_est_eval
+    ,ga_res_comb_850k_est_eval
     ,ga_res_comb_450k_est_eval
   ) |>
   `names<-`(
     c(ga_est_eval_results$model[1]
+      ,ga_850k_est_eval_results$model[1]
       ,ga_450k_est_eval_results$model[1]
       ,ga_resfull_rf_est_eval_results$model[1]
+      ,ga_resfull_rf_850k_est_eval_results$model[1]
       ,ga_resfull_rf_450k_est_eval_results$model[1]
       ,ga_res_conds_pred_est_eval_results$model[1]
+      ,ga_res_conds_pred_850k_est_eval_results$model[1]
       ,ga_res_conds_pred_450k_est_eval_results$model[1]
       ,ga_res_comb_est_eval_results$model[1]
+      ,ga_res_comb_850k_est_eval_results$model[1]
       ,ga_res_comb_450k_est_eval_results$model[1]
     )
   ) |>
@@ -3077,9 +3150,135 @@ list(
   )
 ```
 
+## Best model predictors
+
+```{r ResComb-GA model predictor, include=FALSE}
+ga_res_comb_est_coefficients <-
+  list(
+    ga_est = ga_est_coefficients
+    
+    ,preterm_pred = preterm_pred_coefficients
+    ,gdm_pred = gdm_pred_coefficients
+    ,lga_pred = lga_pred_coefficients
+    ,chorioamnionitis_pred = chorioamnionitis_pred_coefficients
+    
+    ,ga_res_conds_preterm_est = ga_res_conds_est_coefficients$preterm
+    ,ga_res_conds_gdm_est = ga_res_conds_est_coefficients$gdm
+    ,ga_res_conds_lga_est = ga_res_conds_est_coefficients$lga
+    ,ga_res_conds_chorioamnionitis_est =
+      ga_res_conds_est_coefficients$chorioamnionitis
+    
+    ,ga_res_comb_pr_est = ga_res_comb_pr_est_coefficients
+    ,ga_res_comb_tb_est = ga_res_comb_tb_est_coefficients
+  ) |>
+  imap(~ mutate(.x, model = .y)) |>
+  lapply(rownames_to_column, var = "probe_id") |>
+  reduce(rbind) |>
+  mutate_at(c("probe_id", "model"), \(x) factor(x, unique(x))) |>
+  spread(model, weight, fill = 0) |>
+  column_to_rownames(var = "probe_id")
+```
+
+```{r Write ResComb-GA model predictor, eval=FALSE, include=FALSE}
+ga_res_comb_est_coefficients |>
+  rownames_to_column(var = "cpg_name") |>
+  write_csv("inst/extdata/ga_res_comb_est_coefficients.csv")
+```
+
 # Model submission
 
+```{bash Submission login, eval=FALSE, include=FALSE}
+docker login docker.synapse.org --username herdiants # Synapse authToken (PAT)
+```
+
+```{r Create input and output directories, eval=FALSE, include=FALSE}
+if (!dir.exists("input")) {
+  dir.create("input", recursive = TRUE)
+}
+
+if (!dir.exists("output")) {
+  dir.create("output", recursive = TRUE)
+}
+```
+
+```{r Simulate leaderboard input sample IDs, eval=FALSE, include=FALSE}
+Sample_IDs <- readRDS("data/Sample_IDs.rds")
+```
+
+```{r Simulate leaderboard input data, eval=FALSE, include=FALSE}
+beta_norm_bmiq |>
+  select_at(Sample_IDs) |>
+  rownames_to_column(var = "probe_id") |>
+  write_csv("input/Leaderboard_beta_subchallenge3.csv")
+```
+
 ## Submission 1: GA res-comb-pred elastic net
+
+```{r ResComb-GA prediction - Create model dir, eval=FALSE, include=FALSE}
+if (!dir.exists("pcd3_sub1/data")) {
+  dir.create("pcd3_sub1/data", recursive = TRUE)
+}
+
+if (!dir.exists("pcd3_sub1/inst/extdata")) {
+  dir.create("pcd3_sub1/inst/extdata", recursive = TRUE)
+}
+```
+
+```{r ResComb-GA prediction - Copy the files, eval=FALSE, include=FALSE}
+pcd3_sub1_files_non_default <-
+  c("data/probe_info_epic.rds"
+    ,"data/probe_info_others.rds"
+    ,"data/beta_norm_bmiq_rownames.rds"
+    ,"data/var_ga.rds"
+    
+    ,"data/ga_res_conds_preterm_dmp.rds"
+    ,"data/ga_res_conds_gdm_dmp.rds"
+    ,"data/ga_res_conds_lga_dmp.rds"
+    ,"data/ga_res_conds_chorioamnionitis_dmp.rds"
+    
+    ,"data/preterm_dmp.rds"
+    ,"data/gdm_dmp.rds"
+    ,"data/lga_dmp.rds"
+    ,"data/chorioamnionitis_dmp.rds"
+    
+    ,"data/ga_dmp.rds"
+    ,"data/ga_res_comb_pr_dmp.rds"
+    ,"data/ga_res_comb_tb_dmp.rds"
+    
+    ,"inst/extdata/ga_res_conds_preterm_est_scaler.joblib"
+    ,"inst/extdata/ga_res_conds_gdm_est_scaler.joblib"
+    ,"inst/extdata/ga_res_conds_lga_est_scaler.joblib"
+    ,"inst/extdata/ga_res_conds_chorioamnionitis_est_scaler.joblib"
+    
+    ,"inst/extdata/preterm_pred_scaler.joblib"
+    ,"inst/extdata/gdm_pred_scaler.joblib"
+    ,"inst/extdata/lga_pred_scaler.joblib"
+    ,"inst/extdata/chorioamnionitis_pred_scaler.joblib"
+    
+    ,"inst/extdata/ga_est_scaler.joblib"
+    ,"inst/extdata/ga_res_conds_pred_est_scaler.joblib"
+    ,"inst/extdata/ga_res_comb_pr_est_scaler.joblib"
+    ,"inst/extdata/ga_res_comb_tb_est_scaler.joblib"
+    
+    ,"inst/extdata/ga_res_conds_preterm_est_best_model.joblib"
+    ,"inst/extdata/ga_res_conds_gdm_est_best_model.joblib"
+    ,"inst/extdata/ga_res_conds_lga_est_best_model.joblib"
+    ,"inst/extdata/ga_res_conds_chorioamnionitis_est_best_model.joblib"
+    
+    ,"inst/extdata/preterm_pred_best_model.joblib"
+    ,"inst/extdata/gdm_pred_best_model.joblib"
+    ,"inst/extdata/lga_pred_best_model.joblib"
+    ,"inst/extdata/chorioamnionitis_pred_best_model.joblib"
+    
+    ,"inst/extdata/ga_est_best_model.joblib"
+    ,"inst/extdata/ga_res_conds_pred_est_best_model.joblib"
+    ,"inst/extdata/ga_res_comb_pr_est_best_model.joblib"
+    ,"inst/extdata/ga_res_comb_tb_est_best_model.joblib"
+  )
+
+pcd3_sub1_files_non_default |>
+  file.copy(paste0("pcd3_sub1/", pcd3_sub1_files_non_default))
+```
 
 ```{bash ResComb-GA prediction - Build loc, eval=FALSE, include=FALSE}
 cd pcd3_sub1
@@ -3091,28 +3290,21 @@ cd ..
 docker run -v $(pwd)/input/:/input -v $(pwd)/output/:/output -it pcd3_sub1:latest
 ```
 
-```{r ResComb-GA prediction - IDs of dev & dep, eval=FALSE, include=FALSE}
-Sample_IDs <-
-  vroom("input/Leaderboard_beta_subchallenge2.csv", show_col_types = FALSE) |>
-  colnames() |>
-  setdiff("probe_id")
-```
-
 ```{r ResComb-GA prediction - Results in dev, eval=FALSE, include=FALSE}
 ga_res_comb_est_set_predictions_dev <-
   read_csv(
-    "inst/extdata/ga_450k_est_predictions.csv"
+    "inst/extdata/ga_est_predictions.csv"
     ,show_col_types = FALSE
   ) |>
-  mutate(Sample_accession = readRDS("data/ga_450k_est_set_rownames.rds")) |>
+  mutate(Sample_accession = readRDS("data/ga_est_set_rownames.rds")) |>
   left_join(
     read_csv(
-        "inst/extdata/ga_res_conds_pred_450k_est_predictions.csv"
+        "inst/extdata/ga_res_conds_pred_est_predictions.csv"
         ,show_col_types = FALSE
       ) |>
       mutate(
         Sample_accession =
-          readRDS("data/ga_res_conds_pred_450k_est_set_rownames.rds")
+          readRDS("data/ga_res_conds_pred_est_set_rownames.rds")
       ) |>
       rename(residual_prediction = prediction)
     ,by = join_by(Sample_accession)
@@ -3121,38 +3313,26 @@ ga_res_comb_est_set_predictions_dev <-
   select(-residual_prediction) |>
   left_join(
     read_csv(
-        "inst/extdata/ga_res_comb_pr_450k_est_predictions.csv"
+        "inst/extdata/ga_res_comb_pr_est_predictions.csv"
         ,show_col_types = FALSE
       ) |>
       mutate(
         Sample_accession =
-          readRDS("data/ga_res_comb_pr_450k_est_set_rownames.rds")
+          readRDS("data/ga_res_comb_pr_est_set_rownames.rds")
       ) |>
       rename(residual_prediction_pr = prediction)
     ,by = join_by(Sample_accession)
   ) |>
   left_join(
     read_csv(
-        "inst/extdata/ga_res_comb_tb_450k_est_predictions.csv"
+        "inst/extdata/ga_res_comb_tb_est_predictions.csv"
         ,show_col_types = FALSE
       ) |>
       mutate(
         Sample_accession =
-          readRDS("data/ga_res_comb_tb_450k_est_set_rownames.rds")
+          readRDS("data/ga_res_comb_tb_est_set_rownames.rds")
       ) |>
       rename(residual_prediction_tb = prediction)
-    ,by = join_by(Sample_accession)
-  ) |>
-  left_join(
-    read_csv(
-        "inst/extdata/ga_res_comb_ta_450k_est_predictions.csv"
-        ,show_col_types = FALSE
-      ) |>
-      mutate(
-        Sample_accession =
-          readRDS("data/ga_res_comb_ta_450k_est_set_rownames.rds")
-      ) |>
-      rename(residual_prediction_ta = prediction)
     ,by = join_by(Sample_accession)
   ) |>
   mutate(
@@ -3164,14 +3344,13 @@ ga_res_comb_est_set_predictions_dev <-
         ,ifelse(
           ceiling(prediction) >= 37 & ceiling(prediction) <= 40
           ,ifelse(is.na(residual_prediction_tb), 0, residual_prediction_tb)
-          ,ifelse(is.na(residual_prediction_ta), 0, residual_prediction_ta)
+          ,0
         )
       )
   ) |>
   select(
     -residual_prediction_pr
     ,-residual_prediction_tb
-    ,-residual_prediction_ta
   ) |>
   left_join(
     read_csv(
@@ -3223,7 +3402,7 @@ ga_res_comb_est_set_predictions_dep |>
 
 ```{bash ResComb-GA prediction - Push command, eval=FALSE, include=FALSE}
 cd pcd3_sub1
-docker buildx build --platform linux/amd64 -t docker.synapse.org/syn62407322/ga-res-comb-est-450k-850k:v1.0 --push .
+docker buildx build --platform linux/amd64 -t docker.synapse.org/syn62407322/ga-res-comb-est-350k:v1.0 --push .
 cd ..
 ```
 
