@@ -74,6 +74,7 @@ pcd3_sub1/*
 
 # But don't ignore some data
 !inst/extdata/syn59834055.csv
+!inst/extdata/Sample_annotation.csv
 !data/ano_ori.rds
 !data/df_train_colnames.rds
 !inst/extdata/ano_ori_chars_new_colnames_1742.csv
